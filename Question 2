@@ -1,0 +1,23 @@
+#!/bin/bash
+# Mihir Kalyanthaya
+# Question 2
+# 10/11/2024
+
+import random
+
+def generate_random_DNA_squence(length):
+    bases = ['A','T','G','C']
+    return ''.join(random.choice(bases) for _ in range(length))
+
+def save_to_fasta(sequence, filename):
+    with open(filename, 'w') as f: 
+        f.write(">Random_DNA_Sequence\n")
+        for i in range(0, len(sequence), 80):
+            f.write(sequence[i:i+80] + '\n')
+
+if __name__ == '__main__':
+    sequence_length = 1_000_000
+    random_sequence = generate_random_DNA_squence(sequence_length)
+    output_file = "C:/Users/mihir/OneDrive/Desktop/bioinformatics_project/data/random_sequence.fasta"
+    save_to_fasta(random_sequence, output_file)
+    print(f"Random DNA sequence generated and saved to {output_file}.")
