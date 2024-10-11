@@ -1,0 +1,51 @@
+#!/bin/bash
+# Mihir Kalyanthaya
+# Question 4
+# 10/11/2024
+
+import sys
+import re
+
+def read_fasta(file_path):
+    with open(file_path, 'r') as f:
+        fasta_content = f.read()
+        sequence = ''.join(line.strip() for line in fasta_content.splitlines() if not line.startswith('>'))
+    return sequence
+
+def find_cut_sites(sequence, cut_site):
+    return [m.start() for m in re.finditer(cut_site, sequence)]
+
+def find_specified_cut_sites(positions, min_distance, max_distance):
+    pairs=[]
+    for i in range(len(positions)):
+        for j in range(i+1, len(positions)):
+            distance = positions[j] - positions[i]
+            if min_distance <= distance <= max_distance:
+                pairs.append((positions[i], positions[j]))
+    return pairs
+
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        print("Usage: python find_cutsites.py <FASTA_file_path> <cut_site_sequence>")
+        sys.exit(1)
+
+    fasta_file_path = sys.argv[1]
+    # remove pipe character
+    cut_site_sequence = sys.argv[2].replace('|','')
+    dna_sequence = read_fasta(fasta_file_path)
+    cut_site_positions = find_cut_sites(dna_sequence, cut_site_sequence)
+    cut_site_pairs = find_specified_cut_sites(cut_site_positions, 80000, 120000)
+
+    print(f"Total number of cut sites pairs: {len(cut_site_pairs)}")
+    # print positions of first 5 pairs
+    for i, pair in enumerate(cut_site_pairs[:5]): 
+        print(f"Pair {i+1}: Postions {pair[0]} and {pair[1]}")
+
+    # save summary to results directory
+    summary_file_path = "C:/Users/mihir/OneDrive/Desktop/bioinformatics_project/results/distant_cutsite_summary.txt"
+    with open(summary_file_path, 'w') as summary_file:
+        summary_file.write(f"Total cut site pairs found: {len(cut_site_pairs)}\n")
+        for i, pair in enumerate(cut_site_pairs[:5]):
+            summary_file.write(f"Pair {i+1}: Positions {pair[0]} and {pair[1]}\n")
+    print(f"Summary saved to {summary_file_path}")
+        
